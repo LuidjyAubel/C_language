@@ -8,7 +8,7 @@ namespace code
     {
         Instruction instruction;
         Bloc suivant;
-        Bloc()
+        public Bloc()
         {
             suivant = null;
         }
@@ -21,19 +21,38 @@ namespace code
             }
             else this.suivant.ajouter(instruction);
         }
+        public void afficher()
+        {
+            if (this.suivant != null)
+            {
+                Console.WriteLine(instruction.name);
+                suivant.afficher();         //récursif
+            }
+        }
+        public void executer()
+        {
+            if (this.suivant != null)
+            {
+                instruction.execute();
+                suivant.executer();         //récursif
+            }
+        }
     }
     class Instruction
     {
+        public string name;
     }
     class Instruction_Let : Instruction
     {
         char variable;
-
-        char variable2;        //soit var soit const si c'est une valeur ça contient un ! utiliser la valeur
         int valeur;
-        bool param2var;
-        Instruction_Let(char var,char val2, int val)
+        //char variable2;        //soit var soit const si c'est une valeur ça contient un ! utiliser la valeur
+        //bool param2var;
+       public Instruction_Let(char var, int val)
         {
+            this.name = "LET "+var+" "+val;
+            //this.name = "" + var + " = " + val+";";  traduction C#
+            //this.name = "$" + var + " = " + val+";";
             this.variable = var;
             this.valeur = val;
         }
@@ -48,6 +67,58 @@ namespace code
             rangervaleurdansvariable(lavaleur, variable);
             //ranger la valeur dans la variable
         }*/
+    }
+    class Instruction_ADD : Instruction
+    {
+        char variable;
+        char variable2;
+        char variable3;
+        //char variable2;        //soit var soit const si c'est une valeur ça contient un ! utiliser la valeur
+        //bool param2var;
+        public Instruction_ADD(char var, char var2, char var3)
+        {
+            this.name = "ADD " + var + " " + var2 +" "+var3;
+            //this.name = "" + var + " = " + var2+" + "+var3+";";  //traduction C#
+            //this.name = "$" + var + " = $" + var2+" $"+var3+;";
+            this.variable = var;
+            this.variable2 = var2;
+            this.variable3 = var3;
+        }
+        /*      public void execute()
+              {
+                  int lavaleur;
+                  if (param2var)
+                  {
+                      lavaleur = recuperervaleur(variable2);
+                  }
+                  else lavaleur = valeur;
+                  rangervaleurdansvariable(lavaleur, variable);
+                  //ranger la valeur dans la variable
+              }*/
+    }
+    class Instruction_Write : Instruction
+    {
+        char variable;
+        //char variable2;        //soit var soit const si c'est une valeur ça contient un ! utiliser la valeur
+        //bool param2var;
+        public Instruction_Write(char var)
+        {
+            this.name = "WRITE " + var;
+            //this.name = "" + var + " = " + val+";";  traduction C#
+            //this.name = "$" + var + " = " + val+";";
+            this.variable = var;
+        }
+        /*      public void execute()
+              {
+                  int lavaleur;
+                  if (param2var)
+                  {
+                      lavaleur = recuperervaleur(variable2);
+                  }
+                  else lavaleur = valeur;
+                  rangervaleurdansvariable(lavaleur, variable);
+                  //ranger la valeur dans la variable
+              }*/
     }
     class Variables
     {
