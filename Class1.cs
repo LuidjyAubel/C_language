@@ -7,7 +7,7 @@ namespace code
     class Bloc
     {
         Instruction instruction;
-        Bloc suivant;
+        Bloc suivant; 
         public Bloc()
         {
             suivant = null;
@@ -25,7 +25,7 @@ namespace code
         {
             if (this.suivant != null)
             {
-                Console.WriteLine(instruction.name);
+                instruction.afficher();
                 suivant.afficher();         //récursif
             }
         }
@@ -33,14 +33,23 @@ namespace code
         {
             if (this.suivant != null)
             {
-                instruction.execute();
+                instruction.executer();
+                //instruction.execute();
                 suivant.executer();         //récursif
             }
         }
     }
     class Instruction
     {
-        public string name;
+        //public string name;
+        public virtual void afficher()
+        {
+            Console.WriteLine("Je ne devrais pas être là");
+        }
+        public virtual void executer()
+        {
+            Console.WriteLine("Je ne devrais pas etre la non plus ");
+        }
     }
     class Instruction_Let : Instruction
     {
@@ -48,25 +57,36 @@ namespace code
         int valeur;
         //char variable2;        //soit var soit const si c'est une valeur ça contient un ! utiliser la valeur
         //bool param2var;
+
        public Instruction_Let(char var, int val)
         {
-            this.name = "LET "+var+" "+val;
+            //this.name = "LET "+var+" "+val;
             //this.name = "" + var + " = " + val+";";  traduction C#
-            //this.name = "$" + var + " = " + val+";";
+            //this.name = "$" + var + " = " + val+";"; traduction php
             this.variable = var;
             this.valeur = val;
         }
-  /*      public void execute()
+        public override void afficher()
         {
-            int lavaleur;
-            if (param2var)
-            {
-                lavaleur = recuperervaleur(variable2);
-            }
-            else lavaleur = valeur;
-            rangervaleurdansvariable(lavaleur, variable);
-            //ranger la valeur dans la variable
-        }*/
+            Console.WriteLine("LET " + this.variable + " " + this.valeur+" ");
+        }
+        public override void executer()
+        {
+            //Console.WriteLine("execute let");
+            Class2.LesVariables.setVariable(this.variable, this.valeur);
+        }
+
+        /*      public void execute()
+              {
+                  int lavaleur;
+                  if (param2var)
+                  {
+                      lavaleur = recuperervaleur(variable2);
+                  }
+                  else lavaleur = valeur;
+                  rangervaleurdansvariable(lavaleur, variable);
+                  //ranger la valeur dans la variable
+              }*/
     }
     class Instruction_ADD : Instruction
     {
@@ -77,12 +97,24 @@ namespace code
         //bool param2var;
         public Instruction_ADD(char var, char var2, char var3)
         {
-            this.name = "ADD " + var + " " + var2 +" "+var3;
+            //this.name = "ADD " + var + " " + var2 +" "+var3;
             //this.name = "" + var + " = " + var2+" + "+var3+";";  //traduction C#
             //this.name = "$" + var + " = $" + var2+" $"+var3+;";
             this.variable = var;
             this.variable2 = var2;
             this.variable3 = var3;
+        }
+        public override void afficher()
+        {
+            Console.WriteLine("ADD " + this.variable + " " + this.variable2 +" "+this.variable3+" ");
+        }
+        public override void executer()
+        {
+            //Console.WriteLine("execute add");
+            int valeur1 = Class2.LesVariables.getVariable(this.variable2);
+            int valeur2 = Class2.LesVariables.getVariable(this.variable3);
+            int valeur = valeur1 + valeur2;
+            Class2.LesVariables.setVariable(this.variable, valeur);
         }
         /*      public void execute()
               {
@@ -96,6 +128,108 @@ namespace code
                   //ranger la valeur dans la variable
               }*/
     }
+    class Instruction_INC : Instruction
+    {
+        char variable;
+        //char variable2;        //soit var soit const si c'est une valeur ça contient un ! utiliser la valeur
+        //bool param2var;
+        public Instruction_INC(char var)
+        {
+            this.variable = var;
+        }
+        public override void afficher()
+        {
+            Console.WriteLine("INC " + this.variable + " 1");
+        }
+        public override void executer()
+        {
+            //Console.WriteLine("execute add");
+            int valeur1 = Class2.LesVariables.getVariable(this.variable);
+            int valeur = valeur1 + 1;
+            Class2.LesVariables.setVariable(this.variable, valeur);
+        }
+    }
+    class Instruction_IF : Instruction
+    {
+        char variable1;
+        char variable2;
+        string comparateur;
+        Bloc blocalors;
+        public Instruction_IF(char var1,string comparateur, char var2, Bloc bloc)
+        {
+            //this.name = "LET "+var1+" "+val; //bidouille
+            this.variable1 = var1;
+            this.variable2 = var2;
+            this.comparateur = comparateur;
+            this.blocalors = bloc;
+        }
+
+        public override void afficher()
+        {
+            Console.WriteLine(" IF " + this.variable1 + " "+this.comparateur+" " + this.variable2);
+        }
+
+        public override void executer()
+        {
+            int val1 = Class2.LesVariables.getVariable(this.variable1);
+            int val2 = Class2.LesVariables.getVariable(this.variable2);
+            bool res = false;
+            switch (comparateur)
+            {
+                case "=": res = val1 == val2; break ;
+                case "!=": res = val1 != val2; break;
+                case "<": res = val1 < val2; break;
+                case ">": res = val1 > val2; break;
+                case "<=": res = val1 <= val2; break;
+                case ">=": res = val1 >= val2; break;
+                default: res = false; break;
+            }
+            if (res == true) blocalors.executer();
+            //Console.WriteLine("IF " + val1 +" "+ comparateur+" "+ val2);
+        }
+    }
+    class Instruction_WHILE : Instruction
+    {
+        char variable1;
+        char variable2;
+        string comparateur;
+        Bloc blocalors;
+        public Instruction_WHILE(char var1,string comparateur, char var2, Bloc bloc)
+        {
+            //this.name = "LET "+var1+" "+val; //bidouille
+            this.variable1 = var1;
+            this.variable2 = var2;
+            this.comparateur = comparateur;
+            this.blocalors = bloc;
+        }
+
+        public override void afficher()
+        {
+            Console.WriteLine(" WHILE " + this.variable1 + " "+this.comparateur+" " + this.variable2);
+        }
+
+        public override void executer()
+        {
+            bool res = true;
+            while (res) { 
+            int val1 = Class2.LesVariables.getVariable(this.variable1);
+            int val2 = Class2.LesVariables.getVariable(this.variable2);
+               }
+
+            switch (comparateur)
+            {
+                case "=": res = val1 == val2; break ;
+                case "!=": res = val1 != val2; break;
+                case "<": res = val1 < val2; break;
+                case ">": res = val1 > val2; break;
+                case "<=": res = val1 <= val2; break;
+                case ">=": res = val1 >= val2; break;
+                default: res = false; break;
+            }
+            if (res == true) blocalors.executer();
+            //Console.WriteLine("IF " + val1 +" "+ comparateur+" "+ val2);
+        }
+    }
     class Instruction_Write : Instruction
     {
         char variable;
@@ -103,10 +237,20 @@ namespace code
         //bool param2var;
         public Instruction_Write(char var)
         {
-            this.name = "WRITE " + var;
+            //this.name = "WRITE " + var;
             //this.name = "" + var + " = " + val+";";  traduction C#
             //this.name = "$" + var + " = " + val+";";
             this.variable = var;
+        }
+        public override void afficher()
+        {
+            Console.WriteLine("WRITE " + this.variable+" ");
+        }
+        public override void executer()
+        {
+            //Console.WriteLine("execution de Write");
+            int valeur = Class2.LesVariables.getVariable(this.variable);
+            Console.WriteLine(valeur);
         }
         /*      public void execute()
               {
@@ -157,15 +301,15 @@ namespace code
         }
         public int getVariable(char nomVar)
         {
-            for (int i = 0; i < 26; i++)
+            /*for (int i = 0; i < 26; i++)
             {
                 if (i == nomVar - 'A')
                 {
-                    Console.WriteLine();
-                    Console.WriteLine(nomVar + " = " + tabvar[i]);
+                    //Console.WriteLine(nomVar + " = " + tabvar[i]);
                 }
-            }
-            return 1;
+            }*/
+            int varGET = tabvar[nomVar - 'A'];
+            return varGET;
         }
     }
 }
