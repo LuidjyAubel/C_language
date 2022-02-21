@@ -72,10 +72,12 @@ namespace code
                 case "SUB": traiterSub(i, ligne); break;
                 case "MUL": traiterMul(i, ligne); break;
                 case "DIV": traiterDiv(i, ligne); break;
-		case "IF": traiterIF(i, ligne); break;
-		case "WHILE": traiterWhile(i, ligne); break;
+		        case "IF": traiterIF(i, ligne); break;
+		        case "WHILE": traiterWhile(i, ligne); break;
                 case "MOD": traiterMod(i, ligne); break;
                 case "WRITE": traiterWrite(i, ligne); break;
+                case "INC": traiterINC(i, ligne);break;
+                case "//" : break;
                 case "": break;
 
                 default: Console.WriteLine("ERROR: Instruction inconnue ! <" + token+">"); break;
@@ -199,6 +201,8 @@ namespace code
             if (!estVarConst(param2)) Erreur("PARAM2 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (!estVarConst(param3)) Erreur("PARAM3 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (reste != "") Erreur("ADD n'accepte que 3 parametre");
+            Instruction_SUB instruction = new Instruction_SUB(param1[0], param2[0], param3[0]);
+            LeBlocEnCourant.ajouter(instruction);
             return -1;
         }
         static int traiterWrite(int i, string ligne)
@@ -238,6 +242,8 @@ namespace code
             if (!estVarConst(param2)) Erreur("PARAM2 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (!estVarConst(param3)) Erreur("PARAM3 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (reste != "") Erreur("SUB n'accepte que 3 parametre");
+            Instruction_MUL instruction = new Instruction_MUL(param1[0], param2[0], param3[0]);
+            LeBlocEnCourant.ajouter(instruction);
             return -1;
         }
         static int traiterDiv(int i, string ligne)
@@ -251,6 +257,8 @@ namespace code
             if (!estVarConst(param2)) Erreur("PARAM2 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (!estVarConst(param3)) Erreur("PARAM3 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (reste != "") Erreur("DIV n'accepte que 3 parametre");
+            Instruction_DIV instruction = new Instruction_DIV(param1[0], param2[0], param3[0]);
+            LeBlocEnCourant.ajouter(instruction);
             return -1;
         }
         static int traiterMod(int i, string ligne)
@@ -264,6 +272,8 @@ namespace code
             if (!estVarConst(param2)) Erreur("PARAM2 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (!estVarConst(param3)) Erreur("PARAM3 DOIT ETRE UNE VARIABLE OU UNE CONSTANTE");
             if (reste != "") Erreur("MOD n'accepte que 3 parametre");
+            Instruction_MOD instruction = new Instruction_MOD(param1[0], param2[0], param3[0]);
+            LeBlocEnCourant.ajouter(instruction);
             return -1;
         }
         static int traiterIF(int i, string ligne)
@@ -304,7 +314,7 @@ namespace code
             string reste = ExtraireToken(ref i, ligne);
 
             if (!estVariable(param1)) Erreur("PARAM1 DOIT ETRE UNE VARIABLE");
-            if (reste != "") Erreur("ADD n'accepte que 3 parametre");
+            if (reste != "") Erreur("INC n'accepte que 1 parametre");
             Instruction_INC instruction = new Instruction_INC(param1[0]);
             LeBlocEnCourant.ajouter(instruction);
             return -1;
